@@ -69,3 +69,16 @@ __下線__
 // Botのトークンを使用して接続
 require("dotenv").config();
 client.login(process.env.TOKEN);
+
+// HTTPサーバーの設定を追加
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Bot is running!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
