@@ -18,10 +18,38 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
   try {
-    // ボットがオフラインの場合、再接続を試みる
+    // ボットの状態をチェックして再接続
     if (!client.isReady()) {
-      await client.login(process.env.TOKEN);
-      console.log("ボットが再接続しました");
+      console.log("ボットが非アクティブ状態です。再接続を試みます...");
+      try {
+        await client.login(process.env.TOKEN);
+        console.log("ボットが再接続しました");
+        // 再接続成功のメッセージを送信
+        message.channel.send("ボットが再起動しました！");
+      } catch (error) {
+        console.error("再接続に失敗しました:", error);
+        message.channel.send("申し訳ありません。再接続に失敗しました。");
+        return;
+      }
+    }
+
+    // !wakeupコマンドを追加
+    if (message.content === "!wakeup") {
+      const status = client.isReady()
+        ? "既にオンラインです"
+        : "再接続を試みます...";
+      message.reply(status);
+      if (!client.isReady()) {
+        try {
+          await client.login(process.env.TOKEN);
+          message.reply("再接続に成功しました！");
+        } catch (error) {
+          message.reply(
+            "再接続に失敗しました。しばらく待ってから再試行してください。"
+          );
+        }
+      }
+      return;
     }
 
     // メッセージの内容に応じて応答
@@ -40,7 +68,10 @@ client.on("messageCreate", async (message) => {
     // 新しいステータス確認コマンドを追加
     if (message.content === "!status") {
       const status = client.isReady() ? "オンライン" : "オフライン";
-      message.reply(`ボットの状態: ${status}`);
+      const uptime = client.isReady()
+        ? `\n稼働時間: ${Math.floor(client.uptime / 1000)}秒`
+        : "";
+      message.reply(`ボットの状態: ${status}${uptime}`);
     }
 
     if (message.content === "!ping") {
@@ -84,9 +115,15 @@ __下線__
   }
 });
 
-// エラーハンドリングを追加
-client.on("disconnect", () => {
+// エラーハンドリングを強化
+client.on("disconnect", async () => {
   console.log("ボットが切断されました。再接続を試みます...");
+  try {
+    await client.login(process.env.TOKEN);
+    console.log("再接続に成功しました");
+  } catch (error) {
+    console.error("再接続に失敗しました:", error);
+  }
 });
 
 client.on("error", (error) => {
