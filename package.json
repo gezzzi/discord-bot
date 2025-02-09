@@ -1,4 +1,7 @@
 {
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
@@ -9,6 +12,7 @@
   },
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "npm install"
   }
 }
