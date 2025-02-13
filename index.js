@@ -61,6 +61,7 @@ client.on("messageCreate", async (message) => {
 \`!hello\` - 挨拶を返信
 \`!md\` - マークダウンの書き方を表示
 \`!status\` - ボットの状態を確認
+\`!kill\` - ボットをシャットダウン（管理者のみ）
 `;
       message.reply(helpMessage);
     }
@@ -109,6 +110,22 @@ __下線__
 `;
       message.reply(markdownHelp);
     }
+
+    // シャットダウンコマンドを追加
+    if (message.content === "!kill") {
+      // 管理者権限を持つユーザーのみ実行可能
+      if (!message.member.permissions.has("Administrator")) {
+        message.reply("このコマンドは管理者のみ使用できます。");
+        return;
+      }
+
+      message.reply("ボットをシャットダウンします...");
+      console.log("ボットをシャットダウンします...");
+
+      // クライアントを破棄してプロセスを終了
+      await client.destroy();
+      process.exit(0);
+    }
   } catch (error) {
     console.error("エラーが発生しました:", error);
     message.reply("申し訳ありません。エラーが発生しました。");
@@ -137,7 +154,7 @@ client.login(process.env.TOKEN);
 // HTTPサーバーの設定を追加
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 app.get("/", (req, res) => {
   res.send("Bot is running!");
