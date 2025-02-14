@@ -1,3 +1,3 @@
-cd /d C:\Users\user\dev\discord-bot2
+cd /d C:\Users\user\production\discord-bot2
 npm start
 pause 
